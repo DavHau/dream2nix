@@ -16,7 +16,7 @@ Building 'Prettier@2.4.1'.
     src,
   }:
     (dream2nix.lib.makeFlakeOutputs {
-      systems = ["x86_64-linux"];
+      systems = ["x86_64-linux" "aarch64-darwin"];
       config.projectRoot = ./.;
       source = src;
       projects = ./projects.toml;
