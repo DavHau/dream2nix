@@ -34,7 +34,7 @@
   pdefs = config.nodejs-package-lock-v3.pdefs;
 
   defaultPackageName = config.nodejs-package-lock-v3.packageLock.name;
-  defaultPackageVersion = config.nodejs-package-lock-v3.packageLock.version;
+  defaultPackageVersion = config.nodejs-package-lock-v3.packageLock.version or "";
 
   nodejs = config.deps.nodejs;
 

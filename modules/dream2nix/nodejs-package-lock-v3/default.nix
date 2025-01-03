@@ -54,7 +54,7 @@
       # Root level package
       name = entry.name;
       value = {
-        ${entry.version} = {
+        ${entry.version or ""} = {
           dependencies = getDependencies lock path entry;
         };
       };
