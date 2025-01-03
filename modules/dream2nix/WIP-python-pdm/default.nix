@@ -11,15 +11,7 @@
       lib.systems.elaborate config.deps.python.stdenv.targetPlatform;
   };
 
-  libpyproject = import (dream2nix.inputs.pyproject-nix + "/lib") {inherit lib;};
-  libpyproject-fetchers = import (dream2nix.inputs.pyproject-nix + "/fetchers") {
-    inherit lib;
-    curl = config.deps.curl;
-    jq = config.deps.jq;
-    python3 = config.deps.python;
-    runCommand = config.deps.runCommand;
-    stdenvNoCC = config.deps.stdenvNoCC;
-  };
+  libpyproject = dream2nix.inputs.pyproject-nix.lib;
 
   lock_data = lib.importTOML config.pdm.lockfile;
   environ = libpyproject.pep508.mkEnviron config.deps.python;
@@ -75,6 +67,7 @@ in {
       autoPatchelfHook
       buildPackages
       curl
+      fetchPypiLegacy
       jq
       mkShell
       pdm
@@ -193,7 +186,7 @@ in {
             else null
           );
           mkDerivation = {
-            src = lib.mkDefault (libpyproject-fetchers.fetchFromLegacy {
+            src = lib.mkDefault (config.deps.fetchPypiLegacy {
               pname = name;
               file = source.file;
               hash = source.hash;
