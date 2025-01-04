@@ -26,12 +26,43 @@
 
   pyproject = libpdm.loadPdmPyProject (lib.importTOML config.pdm.pyproject);
 
+  invalidatianData = {
+    dependencies = pyproject.pyproject.project.dependencies or [];
+    "dev-dependencies" = pyproject.pyproject.tool.pdm."dev-dependencies" or {};
+    "optional-dependencies" = pyproject.pyproject.project."optional-dependencies" or {};
+    sources = pyproject.pyproject.tool.pdm.source or [];
+    "requires-python" = pyproject.pyproject.project."requires-python" or "";
+    overrides = pyproject.pyproject.tool.pdm.resolution.overrides or {};
+  };
+  lockstr = lib.replaceStrings [":" ","] [": " ", "] (builtins.toString (builtins.toJSON invalidatianData));
+  lock_hash = "sha256:" + builtins.hashString "sha256" lockstr;
+  lockIsValid = lock_hash == lock_data.metadata.content_hash;
+
+  updateHint = ''
+    To create or update the lock file, run:
+
+      bash -c $(nix-build ${config.lock.refresh.drvPath} --no-link)/bin/refresh
+
+    Alternatively `nix run` the .lock attribute of your package, or run 'pdm lock'.
+  '';
+
+  errorOutdated = ''
+    The lock file ${config.pdm.lockfile}
+      for drv-parts module '${config.name}' is outdated.
+
+    ${updateHint}
+  '';
+
   groups_with_deps = libpdm.groupsWithDeps {
     inherit environ pyproject;
   };
-  parsed_lock_data = libpdm.parseLockData {
-    inherit environ lock_data;
-  };
+  parsed_lock_data =
+    if ! lockIsValid
+    then throw errorOutdated
+    else
+      libpdm.parseLockData {
+        inherit environ lock_data;
+      };
   buildSystemNames =
     map
     (name: (libpyproject.pep508.parseString name).name)
