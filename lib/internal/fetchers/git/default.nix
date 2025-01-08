@@ -22,12 +22,13 @@ in {
     url,
     rev,
     submodules ? true,
+    shallow ? false,
     ...
   } @ inp: let
-    isRevGitRef = isGitRef rev;
+    isRevGitRef = isGitRef rev != null;
     hasGitRef = inp.ref or null != null;
   in
-    if isRevGitRef == null && isGitRev rev == null
+    if ! isRevGitRef && isGitRev rev == null
     then
       throw ''
         invalid git rev: ${rev}
@@ -47,7 +48,7 @@ in {
         if hasGitRef
         then {inherit (inp) rev ref;}
         # otherwise check if the rev is a ref, if it is add to ref
-        else if isRevGitRef != null
+        else if isRevGitRef
         then {ref = inp.rev;}
         # if the rev isn't a ref, then it is a rev, so add it there
         else {rev = inp.rev;};
@@ -57,9 +58,8 @@ in {
         (b.fetchGit
           (refAndRev
             // {
-              inherit url submodules;
+              inherit url submodules shallow;
               # disable fetching all refs if the source specifies a ref
-              shallow = true;
               allRefs = ! hasGitRef;
             }));
 
@@ -74,8 +74,7 @@ in {
             b.fetchGit
             (refAndRev
               // {
-                inherit url submodules;
-                shallow = true;
+                inherit url submodules shallow;
                 allRefs = ! hasGitRef;
               })
         else
