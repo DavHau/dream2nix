@@ -66,8 +66,8 @@
         env
       }
       ${package}/bin/fetch_pip_metadata \
-        --json-args-file ${args} \
-        --project-root $(${findRoot})
+        --json-args-file "${args}" \
+        --project-root "$(${findRoot})"
     '';
 in
   script
