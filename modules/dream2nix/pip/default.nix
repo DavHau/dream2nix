@@ -228,6 +228,7 @@ in {
           # https://github.com/NixOS/nixpkgs/pull/302385
           mv "$out/${pyEnv'.sitePackages}/sitecustomize.py" "$out/${pyEnv'.sitePackages}/_sitecustomize.py"
         '';
+      ignoreCollisions = true;
     });
 
   # a shell hook for composition purposes
