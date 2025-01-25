@@ -59,6 +59,8 @@
         };
       };
     }
+    else if entry ? extraneous && entry.extraneous
+    then { extraneous = true; }
     else let
       source = parseSource entry;
       version =
@@ -83,10 +85,13 @@
   parse = lock:
     builtins.foldl'
     (acc: entry:
-      acc
-      // {
-        ${entry.name} = acc.${entry.name} or {} // entry.value;
-      })
+      if entry ? extraneous && entry.extraneous
+      then acc
+      else
+        acc
+        // {
+          ${entry.name} = acc.${entry.name} or {} // entry.value;
+        })
     {}
     # [{name=; value=;} ...]
     (l.mapAttrsToList (parseEntry lock) lock.packages);
