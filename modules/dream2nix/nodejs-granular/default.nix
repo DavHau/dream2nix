@@ -71,18 +71,23 @@
 
   nodejsDeps =
     lib.mapAttrs
-    (name: versions:
-      lib.genAttrs
-      versions
-      (version:
-        makeDependencyModule name version))
+    (
+      name: versions:
+        lib.genAttrs
+        versions
+        (version: {...}: {
+          imports = [
+            (commonModule name version)
+            (makeDependencyModule name version)
+            cfg.overrideAll
+            (cfg.overrides.${name} or {})
+          ];
+        })
+    )
     packageVersions;
 
   # Generates a derivation for a specific package name + version
   makeDependencyModule = name: version: {config, ...}: {
-    imports = [
-      (commonModule name version)
-    ];
     name = lib.replaceStrings ["@" "/"] ["__at__" "__slash__"] name;
     inherit version;
     env = {
