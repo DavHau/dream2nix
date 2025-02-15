@@ -120,6 +120,8 @@
           deps = defaultDeps ++ (l.concatLists (l.map depsByExtra cfg.buildExtras));
         in
           l.map (name: cfg.drvs.${name}.public.out) deps;
+
+        passthru.topConfig = config;
       };
     };
   };
