@@ -29,7 +29,7 @@ If your organization wants to support the project with extra funding in order to
 
 ### Documentation
 
-[👉 To the docs](https://dream2nix.dev)
+[👉 To the docs](https://dream2nix.dev/guides/getting-started/)
 
 ### Presentations
 
